@@ -65,17 +65,17 @@ class MainFragment : Fragment() {
     }
 
     private fun updateCurrentCard() = with(binding){
-        model.liveDataCurrent.observe(viewLifecycleOwner) {
-            val maxMinTemp = "${it.maxTemp}C / ${it.minTemp}C"
+        model.liveDataCurrent.observe(viewLifecycleOwner){
+            val maxMinTemp = "${it.maxTemp}Cº/${it.minTemp}Cº"
             tvDate.text = it.time
             tvCity.text = it.city
             tvCurrentTemp.text = it.currentTemp
             tvCondition.text = it.condition
             tvMaxMin.text = maxMinTemp
             Picasso.get().load("https:" + it.imageUrl).into(imageView2)
-
         }
     }
+
     private fun permissionListener(){
         pLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()){
@@ -139,6 +139,7 @@ class MainFragment : Fragment() {
             )
             list.add(item)
         }
+        model.liveDataList.value = list
         return list
     }
 

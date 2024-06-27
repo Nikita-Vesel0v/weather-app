@@ -11,18 +11,19 @@ import com.niki.weatherapp.databinding.ListItemBinding
 import com.squareup.picasso.Picasso
 
 class WeatherAdapter : ListAdapter<WeatherModel, WeatherAdapter.Holder>(Comparator()) {
-    class Holder(view: View) : RecyclerView.ViewHolder(view) {
-        val binding = ListItemBinding.bind(view)
-        fun bind(item: WeatherModel) = with(binding){
-            tvData.text = item.time.split(" ")[1]
-            tvCond.text = item.condition
-            tvTemp.text = item.currentTemp
-            Picasso.get().load("https:" + item.imageUrl).into(im)
 
+    class Holder(view: View) : RecyclerView.ViewHolder(view){
+        val binding = ListItemBinding.bind(view)
+
+        fun bind(item: WeatherModel) = with(binding){
+            tvData.text = item.time
+            tvCond.text = item.condition
+            tvTemp.text = item.currentTemp.ifEmpty { "${item.maxTemp}ºC / ${item.minTemp}ºC" }
+            Picasso.get().load("https:" + item.imageUrl).into(im)
         }
     }
 
-    class Comparator: DiffUtil.ItemCallback<WeatherModel> (){
+    class Comparator : DiffUtil.ItemCallback<WeatherModel>(){
         override fun areItemsTheSame(oldItem: WeatherModel, newItem: WeatherModel): Boolean {
             return oldItem == newItem
         }
