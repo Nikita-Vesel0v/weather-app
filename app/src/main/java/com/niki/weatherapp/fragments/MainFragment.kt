@@ -9,16 +9,19 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.tabs.TabLayoutMediator
+import com.niki.weatherapp.MainViewModel
 import com.niki.weatherapp.adapters.VpAdapter
 import com.niki.weatherapp.adapters.WeatherModel
 import com.niki.weatherapp.databinding.FragmentMainBinding
 import com.niki.weatherapp.fragments.DaysFragment
 import com.niki.weatherapp.fragments.HoursFragment
 import com.niki.weatherapp.fragments.isPermissionGranted
+import com.squareup.picasso.Picasso
 import org.json.JSONObject
 
 const val API_KEY = "c2cb54503a3140859a8145001242606"
@@ -34,6 +37,7 @@ class MainFragment : Fragment() {
     )
     private lateinit var pLauncher: ActivityResultLauncher<String>
     private lateinit var binding: FragmentMainBinding
+    private val model: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,7 +51,8 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         checkPermission()
         init()
-        requestWeatherData("London")
+        updateCurrentCard()
+        requestWeatherData("Moscow")
     }
 
     private fun init() = with(binding){
@@ -59,6 +64,18 @@ class MainFragment : Fragment() {
 
     }
 
+    private fun updateCurrentCard() = with(binding){
+        model.liveDataCurrent.observe(viewLifecycleOwner) {
+            val maxMinTemp = "${it.maxTemp}C / ${it.minTemp}C"
+            tvDate.text = it.time
+            tvCity.text = it.city
+            tvCurrentTemp.text = it.currentTemp
+            tvCondition.text = it.condition
+            tvMaxMin.text = maxMinTemp
+            Picasso.get().load("https:" + it.imageUrl).into(imageView2)
+
+        }
+    }
     private fun permissionListener(){
         pLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()){
@@ -138,9 +155,7 @@ class MainFragment : Fragment() {
                 .getJSONObject("condition").getString("icon"),
             weatherItem.hours
         )
-        Log.d("MyLog", "City: ${item.maxTemp}")
-        Log.d("MyLog", "Time: ${item.minTemp}")
-        Log.d("MyLog", "Time: ${item.hours}")
+        model.liveDataCurrent.value = item
     }
 
     companion object {

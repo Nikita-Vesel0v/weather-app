@@ -8,15 +8,16 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.niki.weatherapp.R
 import com.niki.weatherapp.databinding.ListItemBinding
+import com.squareup.picasso.Picasso
 
 class WeatherAdapter : ListAdapter<WeatherModel, WeatherAdapter.Holder>(Comparator()) {
     class Holder(view: View) : RecyclerView.ViewHolder(view) {
         val binding = ListItemBinding.bind(view)
         fun bind(item: WeatherModel) = with(binding){
-            tvData.text = item.time
+            tvData.text = item.time.split(" ")[1]
             tvCond.text = item.condition
             tvTemp.text = item.currentTemp
-
+            Picasso.get().load("https:" + item.imageUrl).into(im)
 
         }
     }
